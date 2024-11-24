@@ -26,16 +26,19 @@ function switchToNextState() {
             // 进入长休息
             currentTime = settings.longBreakTime * 60;
             document.querySelector('.status').textContent = '长休息';
+            document.querySelector('.container').classList.add('break-time');
         } else {
             // 进入短休息
             currentTime = settings.shortBreakTime * 60;
             document.querySelector('.status').textContent = '短休息';
+            document.querySelector('.container').classList.add('break-time');
         }
     } else {
         // 休息结束，回到工作时间
         isWorkTime = true;
         currentTime = settings.workTime * 60;
         document.querySelector('.status').textContent = '工作时间';
+        document.querySelector('.container').classList.remove('break-time');
     }
     
     // 更新显示并直接开始新的计时
@@ -50,18 +53,23 @@ function switchToNextState() {
             switchToNextState();
         }
     }, 1000);
+    
+    // 重置背景高度为 100%
+    document.querySelector('.background-layer').style.height = '100%';
 }
 
 // 开始计时
 function startTimer() {
     if (!isRunning) {
         isRunning = true;
+        // 显示动画效果
+        document.querySelector('.background-layer').style.display = 'block';
+        document.querySelector('.wave-container').style.display = 'block';
         timerInterval = setInterval(() => {
             if (currentTime > 0) {
                 currentTime--;
                 updateTimerDisplay();
             } else {
-                clearInterval(timerInterval);
                 switchToNextState();
             }
         }, 1000);
@@ -72,6 +80,9 @@ function startTimer() {
 function pauseTimer() {
     clearInterval(timerInterval);
     isRunning = false;
+    // 隐藏所有动画效果
+    document.querySelector('.background-layer').style.display = 'none';
+    document.querySelector('.wave-container').style.display = 'none';
 }
 
 // 重置计时器
@@ -84,14 +95,30 @@ function resetTimer() {
     document.querySelector('.status').textContent = '工作时间';
     updateTimerDisplay();
     document.getElementById('toggleButton').checked = false;
+    // 隐藏动画效果
+    document.querySelector('.background-layer').style.display = 'none';
+    document.querySelector('.wave-container').style.display = 'none';
 }
 
-// 更新计时器显示
+// 更新计时器显示和背景动画
 function updateTimerDisplay() {
     const minutes = Math.floor(currentTime / 60);
     const seconds = currentTime % 60;
     document.querySelector('.timer').textContent = 
         `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    
+    // 计算并更新背景高度
+    const totalTime = isWorkTime ? settings.workTime * 60 : 
+        (currentCycle % settings.longBreakInterval === 0 ? settings.longBreakTime * 60 : settings.shortBreakTime * 60);
+    const percentage = (currentTime / totalTime) * 100;
+    const height = `${percentage}%`;
+    
+    // 同时更新背景和波浪容器的位置
+    const backgroundLayer = document.querySelector('.background-layer');
+    const waveContainer = document.querySelector('.wave-container');
+    
+    backgroundLayer.style.height = height;
+    waveContainer.style.bottom = height;  // 波浪容器跟随背景高度
 }
 
 // 切换按钮事件

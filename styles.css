@@ -27,6 +27,8 @@ body {
     height: 100%;
     padding: 20px;
     gap: 40px;
+    position: relative;
+    z-index: 3;
 }
 
 .status {
@@ -76,6 +78,7 @@ button:disabled {
     display: none;
     flex-direction: column;
     justify-content: space-between;
+    z-index: 10;
 }
 
 .settings h1 {
@@ -246,5 +249,38 @@ button:disabled {
 
 .apply-button:active {
     background-color: #124aa3;
+}
+
+/* 背景层 */
+.background-layer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: #64B5F6;
+    transition: height 1s linear;
+    z-index: 1;
+    display: none;
+}
+
+/* 休息时间的颜色 */
+.break-time .background-layer {
+    background: #81C784;
+}
+
+/* 在主页面显示背景层 */
+.pomodoro .background-layer {
+    display: block;
+}
+
+/* 确保内容在背景上层 */
+.pomodoro {
+    position: relative;
+    z-index: 3;
+}
+
+/* 显示设置页面时隐藏背景层 */
+#checkbox:checked ~ .background-layer {
+    display: none;
 }
 
